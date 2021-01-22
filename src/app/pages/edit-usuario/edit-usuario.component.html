@@ -1,0 +1,173 @@
+<div class="container div-con" style="position: relative">
+
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>Editar un usuario</strong>.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <input #termino type="text" (keyup)="buscar(termino.value)" class="form-control" placeholder="Buscar usuario">
+            <!-- <button type="button" (click)="buscar(termino.value)" class="btn btn-outline-blue">Buscar</button> -->
+        </div>
+    </div>
+
+    <!-- <h6 class="text-center font-weight text-uppercase">Presionar el campo que desea editar</h6> -->
+    <!-- <div id="table" class="table-editable"> -->
+    <table *ngIf="!cargando && usuarios.length > 0" class="table mt-3 animated fadeIn faster ml-0">
+        <thead class="thead-dark table-bordered  text-center">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Contraseña</th>
+                <th scope="col">Permiso</th>
+                <th scope="col">TOOLS</th>
+                <!-- <th scope="col">Eliminar</th> -->
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr *ngFor="let usuario of usuarios; let i = index" class="list-group-item-action text-center">
+                <th scope="col" *ngIf="!search">{{ i + 1 }}</th>
+                <td scope="col" *ngIf="!search">{{ usuario.nombre }}</td>
+                <td scope="col" *ngIf="!search">{{ usuario.password }}</td>
+
+                <td scope="col" *ngIf="!search">
+                    {{ usuario.permiso }}
+                </td>
+
+                <td scope="col" *ngIf="!search">
+                    <button class="btn btn-info mr-1" (click)="actualizarUsr(usuario.id)" data-toggle="modal" data-target="#modalRegisterForm">
+                        <i class="fa fa-pen"></i>
+                    </button>
+                    <button class="btn btn-danger" (click)="borrarUsuario( usuario, i )">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+
+            </tr>
+
+
+
+
+
+
+            <tr *ngFor="let usuario of usuarios; let i = index" class="list-group-item-action text-center">
+                <th scope="col" *ngIf="buscando == usuario.nombre">{{ i + 1 }}</th>
+                <td scope="col" *ngIf="buscando == usuario.nombre">{{ usuario.nombre }}</td>
+                <td scope="col" *ngIf="buscando == usuario.nombre">{{ usuario.password }}</td>
+
+                <td scope="col" *ngIf="buscando == usuario.nombre">
+                    {{ usuario.permiso }}
+                </td>
+
+                <td scope="col" *ngIf="buscando == usuario.nombre">
+                    <button class="btn btn-info mr-1" (click)="actualizarUsr(usuario.id)" data-toggle="modal" data-target="#modalRegisterForm">
+                        <i class="fa fa-pen"></i>
+                    </button>
+                    <button class="btn btn-danger" (click)="borrarUsuario( usuario, i )">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+
+            <tr *ngFor="let usuario of usuarios; let primero = first">
+                <th colspan="5">
+                    <!-- && buscando.length > 0 -->
+                    <div *ngIf="search && primero && buscando !== usuario.nombre" class="alert alert-info text-center mt-3 animated fadeIn faster">
+                        <h4 class="alert-heading">Buscando</h4>
+                        <p>
+                            <i class="fa fa-sync-alt fa-spin fa-2x"></i>
+                        </p>
+                        <p class="mb-0">
+                            Espere por favor
+                        </p>
+                    </div>
+                </th>
+            </tr>
+
+        </tbody>
+    </table>
+
+
+    <div *ngIf="!cargando && usuarios.length === 0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading">No hay registros</h4>
+        <p>
+            <i class="fa fa-exclamation fa-2x"></i>
+        </p>
+    </div>
+
+    <div *ngIf="cargando" class="alert alert-info text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading">Cargando</h4>
+        <p>
+            <i class="fa fa-sync-alt fa-spin fa-2x"></i>
+        </p>
+        <p class="mb-0">
+            Espere por favor
+        </p>
+    </div>
+
+
+</div>
+
+
+<!-- MODAL PARA EDITAR USUARIO -->
+<div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">EDITANDO USUARIO</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form (ngSubmit)="guardar( f )" #f="ngForm">
+                <div class="modal-body mx-3">
+
+                    <div class="md-form mb-5">
+                        <i class="fas fa-user-edit prefix grey-text"></i>
+                        <label data-error data-success for="nombre">Usuario</label>
+                        <input type="text" id="nombre" class="form-control validate" #nombre="ngModel" name="nombre" [(ngModel)]="usuario.nombre" required minlength="4" pattern="[A-Za-z0-9]+" maxlength="12" autocomplete="off" pattern="[A-Za-z0-9]+">
+
+                        <div *ngIf="nombre.errors?.minlength">
+                            <h6 style="color: red;"> Por lo menos {{ nombre.errors.minlength.requiredLength }} caracteres.</h6>
+                        </div>
+
+                        <div *ngIf="nombre.errors?.pattern && !nombre.errors?.minlength">
+                            <h6 style="color: red;"> Solo se permiten números y letras </h6>
+                        </div>
+
+                    </div>
+
+                    <div class="md-form mb-5">
+                        <i class="fas fa-lock prefix grey-text"></i>
+                        <label data-error data-success for="password">Contraseña</label>
+                        <input type="text" id="password" class="form-control validate" #password="ngModel" name="password" [(ngModel)]="usuario.password" minlength="6" maxlength="12" required autocomplete="off">
+
+                        <div *ngIf="password.errors?.minlength">
+                            <h6 style="color: red;"> Por lo menos {{ password.errors.minlength.requiredLength }} caracteres.</h6>
+                        </div>
+
+                    </div>
+
+                    <div class="md-form mb-5">
+                        <i class="fas fa-users-cog prefix grey-text"></i>
+                        <select class="custom-select custom-select-lg mb-1 ml-5 form-control col-11" name="perfil" [(ngModel)]="usuario.permiso">
+                            <option value="" disabled selected>Seleccione el permiso</option>
+                            <option *ngFor="let permisos of permisos" [value]="permisos.id">{{ permisos.perfil }}</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-primary">Guardar Cambios</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

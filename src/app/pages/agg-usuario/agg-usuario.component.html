@@ -1,0 +1,115 @@
+<div class="container div-con" style="position: relative">
+    <form (ngSubmit)="guardar( f )" #f="ngForm" novalidate>
+
+        <div class="form-row col-12 justify-content-between">
+
+            <div class="md-form col-5">
+
+                <i class="fas fa-user prefix"></i>
+                <input type="text" class="form-control validate-input" name="nombre" [(ngModel)]="usuario.nombre" id="nombre" required minlength="4" #nombre="ngModel" maxlength="12" autocomplete="off" pattern="[A-Za-z0-9]+">
+                <label for="nombre" data-error data-success>Usuario</label>
+
+                <div *ngIf="nombre.errors?.minlength">
+                    <h6 style="color: red;"> Por lo menos {{ nombre.errors.minlength.requiredLength }} caracteres. </h6>
+                </div>
+
+                <div *ngIf="nombre.errors?.pattern  && !nombre.errors?.minlength">
+                    <h6 style="color: red;"> Solo se permiten números y letras </h6>
+                </div>
+
+            </div>
+
+            <div class="md-form col-5">
+
+                <i Class="fas fa-lock prefix"></i>
+                <input [type]="passType" id="password" class="form-control validate-input" name="password" #password="ngModel" [(ngModel)]="usuario.password" minlength="6" maxlength="12" required>
+                <label for="password" data-error data-success>Contraseña</label>
+
+                <button (click)="mostrarContrasena()" type="button">
+                <span style="font-size: 25px;">
+                    <i [ngClass]="{'far fa-eye': passShow, 'fas fa-eye-slash': !passShow }"></i>
+                </span>
+                </button>
+
+                <div *ngIf="password.errors?.minlength">
+                    <h6 style="color: red;"> Por lo menos {{ password.errors.minlength.requiredLength }} caracteres. </h6>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <strong>Listado de permisos</strong> solo se puede otorgar un permiso.
+        </div>
+
+        <table *ngIf="!cargando && permisos.length > 0" class="table mt-3 animated fadeIn faster ml-auto">
+            <thead class="thead-dark text-center table-bordered">
+                <tr>
+                    <th scope="col">#
+                    </th>
+                    <th scope="col">PERFIL
+                    </th>
+                    <th scope="col">DESCRIPCIÓN
+                    </th>
+                    <th scope="col">SELECCIONAR
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <ng-container *ngFor="let permisos of permisos; let i = index">
+                    <tr class="list-group-item-action text-center" (click)="idTable(permisos.id)">
+                        <th scope="row">{{ permisos.id }}</th>
+                        <td>{{ permisos.perfil }}</td>
+                        <td>{{ permisos.descripcion }}</td>
+
+                        <td *ngIf="!pk">
+
+                            <button class="btn btn-outline-danger w-50" type="button" (click)="pk = !pk"> 
+                                <i class="fa fa-times"></i>
+                            </button>
+
+                        </td>
+
+                        <td *ngIf="pk && i+1 == posicion">
+
+                            <button class="btn btn-outline-primary w-50" type="button" (click)="pk = !pk"> 
+                                <i class="fa fa-check"></i> 
+                            </button>
+
+                        </td>
+                    </tr>
+                </ng-container>
+
+            </tbody>
+        </table>
+
+        <br><br>
+        <button *ngIf="!cargando && permisos.length > 0" type="submit" class="btn btn-outline-primary" style="position: absolute; right: 0; bottom: 8px;">
+            <i class="fa fa-saved"></i>
+            GUARDAR
+        </button>
+
+    </form>
+
+    <div *ngIf="!cargando && permisos.length === 0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading">No hay permisos</h4>
+        <p>
+            <i class="fa fa-exclamation fa-2x"></i>
+        </p>
+    </div>
+
+    <div *ngIf="cargando" class="alert alert-info text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading">Cargando</h4>
+        <p>
+            <i class="fa fa-sync-alt fa-spin fa-2x"></i>
+        </p>
+        <p class="mb-0">
+            Espere por favor
+        </p>
+    </div>
+</div>

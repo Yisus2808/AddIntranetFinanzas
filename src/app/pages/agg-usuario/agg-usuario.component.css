@@ -1,0 +1,12 @@
+#form {
+    display: flex;
+}
+
+.div-con {
+    margin-top: 70px;
+}
+
+
+/* .ng-invalid.ng-touched:not(form) {
+    border: 1px solid red;
+} */
